@@ -5,15 +5,13 @@ import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "droit")
-public class Droit {
+public class Droit extends EntityClass {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
-    @NotBlank
-    @Column(unique = true)
-    private String code; // e.g., USER_ENABLE_DISABLE, USER_PASSWORD_RESET
+    
     
     @NotBlank
     private String libelle; // e.g., "Enable or disable user"
@@ -40,14 +38,6 @@ public class Droit {
     
     public void setId(Integer id) {
         this.id = id;
-    }
-    
-    public String getCode() {
-        return code;
-    }
-    
-    public void setCode(String code) {
-        this.code = code;
     }
     
     public String getLibelle() {

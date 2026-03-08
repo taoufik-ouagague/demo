@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface UserDroitRepository extends JpaRepository<UserDroit, Integer> {
     List<UserDroit> findByUser(User user);
-    List<UserDroit> findByUserAndStatus(User user, Boolean status);
+    List<UserDroit> findByUserAndStatus(User user, String status);
     Optional<UserDroit> findByUserAndDroit(User user, Droit droit);
     void deleteByUserAndDroit(User user, Droit droit);
     void deleteByUser(User user);
@@ -25,7 +25,9 @@ public interface UserDroitRepository extends JpaRepository<UserDroit, Integer> {
      * @param droitCode the code of the droit to check for
      * @return true if user has the permission, false otherwise
      */
-    @Query("SELECT CASE WHEN (COUNT(ud) > 0) THEN true ELSE false END " +
-           "FROM UserDroit ud WHERE ud.user = :user AND ud.droit.code = :droitCode")
-    boolean existsByUserAndDroitCode(@Param("user") User user, @Param("droitCode") String droitCode);
+    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END " +
+           "FROM user_droit ud " +
+           "JOIN droit d ON ud.droit_id = d.id " +
+           "WHERE ud.user_id = :userId AND d.code = :droitCode", nativeQuery = true)
+    boolean existsByUserAndDroitCode(@Param("userId") Integer userId, @Param("droitCode") String droitCode);
 }

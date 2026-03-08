@@ -20,26 +20,22 @@ public class UserDroit {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "droit_id", nullable = false)
     private Droit droit;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
     
-    @Column(name = "date_attribution")
-    private LocalDateTime dateAttribution;
     
-    @Column(name = "date_expiration")
-    private LocalDateTime dateExpiration;
+    @Column(name = "date_debut")
+    private LocalDateTime dateDebut;
+    
+    @Column(name = "date_fin")
+    private LocalDateTime dateFin;
     
     @Column(name = "status")
-    private Boolean status = true;
+    private String status ;
     
-    public UserDroit() {
-        this.dateAttribution = LocalDateTime.now();
-    }
     
-    public UserDroit(User user, Droit droit) {
-        this.user = user;
-        this.droit = droit;
-        this.dateAttribution = LocalDateTime.now();
-        this.status = true;
-    }
     
     // Getters and Setters
     public Integer getId() {
@@ -66,27 +62,19 @@ public class UserDroit {
         this.droit = droit;
     }
     
-    public LocalDateTime getDateAttribution() {
-        return dateAttribution;
+    public Role getRole() {
+        return role;
     }
     
-    public void setDateAttribution(LocalDateTime dateAttribution) {
-        this.dateAttribution = dateAttribution;
+    public void setRole(Role role) {
+        this.role = role;
     }
-    
-    public LocalDateTime getDateExpiration() {
-        return dateExpiration;
-    }
-    
-    public void setDateExpiration(LocalDateTime dateExpiration) {
-        this.dateExpiration = dateExpiration;
-    }
-    
-    public Boolean getStatus() {
+
+    public String getStatus() {
         return status;
     }
     
-    public void setStatus(Boolean status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 }

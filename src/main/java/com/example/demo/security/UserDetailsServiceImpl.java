@@ -1,6 +1,5 @@
 package com.example.demo.security;
 
-import com.example.demo.repository.RoleRepository;
 import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,20 +8,23 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.repository.UserDroitRepository;
+
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
-    
     @Autowired
-    private RoleRepository roleRepository;
+    private UserDroitRepository userDroitRepository;
+   
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        
         var user = userRepository.findByLogin(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with login: " + username));
 
-        return UserDetailsImpl.build(user, roleRepository);
+        return UserDetailsImpl.build(user,  userDroitRepository);
     }
 }

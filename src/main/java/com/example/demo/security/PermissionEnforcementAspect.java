@@ -59,7 +59,7 @@ public class PermissionEnforcementAspect {
         User user = userOpt.get();
 
         // Check if user has the required permission/droit
-        boolean hasPermission = userDroitRepository.existsByUserAndDroitCode(user, requiredPermissionCode);
+        boolean hasPermission = userDroitRepository.existsByUserAndDroitCode(user.getId(), requiredPermissionCode);
 
         if (!hasPermission) {
             throw new AccessDeniedException("L'utilisateur n'a pas la permission requise: " + requiredPermissionCode);

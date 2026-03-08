@@ -1,24 +1,21 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 @Entity
-@Table(name = "users", uniqueConstraints = {
-    @UniqueConstraint(columnNames = "login"),
-    @UniqueConstraint(columnNames = "email")
-})
-public class User {
+@Table(name = "users")
+public class User extends EntityClass {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "id_role")
-    private Integer idRole;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id", nullable = true)
+    private Role role;
 
     @Column(name = "libelle")
     private String libelle;
@@ -36,29 +33,6 @@ public class User {
     @Column(nullable = false)
     private String pwd;
 
-    @Column(name = "date_creation")
-    private LocalDateTime dateCreation;
-
-    @Column(name = "date_desactivation")
-    private LocalDateTime dateDesactivation;
-
-    @Column(nullable = false)
-    private Boolean status = true;
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<UserDroit> userDroits;
-
-    public User() {
-    }
-
-    public User(String login, String email, String pwd) {
-        this.login = login;
-        this.email = email;
-        this.pwd = pwd;
-        this.status = true;
-        this.dateCreation = LocalDateTime.now();
-    }
-
     public Integer getId() {
         return id;
     }
@@ -67,12 +41,12 @@ public class User {
         this.id = id;
     }
 
-    public Integer getIdRole() {
-        return idRole;
+    public Role getRole() {
+        return role;
     }
 
-    public void setIdRole(Integer idRole) {
-        this.idRole = idRole;
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public String getLibelle() {
@@ -99,6 +73,7 @@ public class User {
         this.email = email;
     }
 
+    @JsonIgnore
     public String getPwd() {
         return pwd;
     }
@@ -107,35 +82,4 @@ public class User {
         this.pwd = pwd;
     }
 
-    public LocalDateTime getDateCreation() {
-        return dateCreation;
-    }
-
-    public void setDateCreation(LocalDateTime dateCreation) {
-        this.dateCreation = dateCreation;
-    }
-
-    public LocalDateTime getDateDesactivation() {
-        return dateDesactivation;
-    }
-
-    public void setDateDesactivation(LocalDateTime dateDesactivation) {
-        this.dateDesactivation = dateDesactivation;
-    }
-
-    public Boolean getStatus() {
-        return status;
-    }
-
-    public void setStatus(Boolean status) {
-        this.status = status;
-    }
-
-    public List<UserDroit> getUserDroits() {
-        return userDroits;
-    }
-
-    public void setUserDroits(List<UserDroit> userDroits) {
-        this.userDroits = userDroits;
-    }
 }
