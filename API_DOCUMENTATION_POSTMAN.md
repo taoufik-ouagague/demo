@@ -847,7 +847,7 @@ TOKEN=$(curl -s -X POST http://localhost:8080/api/auth/login \
 curl -s -X GET "http://localhost:8080/api/admin/ListRoles" \
   -H "Authorization: Bearer $TOKEN" | jq '.'
 ```
-
+  
 ### 7. Create Role
 ```bash
 TOKEN=$(curl -s -X POST http://localhost:8080/api/auth/login \
