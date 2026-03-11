@@ -25,7 +25,7 @@ public interface RoleRepository extends JpaRepository<Role, Integer> {
     // Direct SQL: Insert role-droit association without loading collection
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO role_droit (role_id, droit_id) VALUES (:roleId, :droitId) ON CONFLICT DO NOTHING", nativeQuery = true)
+    @Query(value = "INSERT IGNORE INTO role_droit (role_id, droit_id) VALUES (:roleId, :droitId)", nativeQuery = true)
     int addDroitToRole(Integer roleId, Integer droitId);
 
     // Direct SQL: Delete role-droit association

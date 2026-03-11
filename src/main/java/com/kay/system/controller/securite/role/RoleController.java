@@ -23,7 +23,7 @@ import com.kay.system.services.securite.role.IRoleService;
 public class RoleController {
 
     @Autowired
-    private IRoleService IRoleService ;
+    private IRoleService roleService;
 
     /**
      * POST /api/securite/ListRoles?page=0&size=10
@@ -35,7 +35,7 @@ public class RoleController {
             @RequestParam(defaultValue = "0")  int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        Page<Role> roles = IRoleService.listRoles(body, page, size);
+        Page<Role> roles = roleService.listRoles(body, page, size);
         return ResponseEntity.ok(roles);
     }
 
@@ -44,7 +44,7 @@ public class RoleController {
      */
     @GetMapping("/GetRole/{roleId}")
     public ResponseEntity<?> getRole(@PathVariable Integer roleId) {
-        Role role = IRoleService.getRoleById(roleId);
+        Role role = roleService.getRoleById(roleId);
         if (role == null) {
             return ResponseEntity.badRequest().body(Map.of("message", "Rôle non trouvé"));
         }
@@ -57,7 +57,7 @@ public class RoleController {
      */
     @PostMapping("/AddRole")
     public ResponseEntity<?> saveRole(@RequestBody Map<String, String> request) {
-        String error = IRoleService.createRole(request);
+        String error = roleService.createRole(request);
         if (error != null) {
             return ResponseEntity.badRequest().body(Map.of("message", error));
         }
@@ -73,7 +73,7 @@ public class RoleController {
             @PathVariable Integer roleId,
             @RequestBody Map<String, String> request
     ) {
-        String error = IRoleService.updateRole(roleId, request);
+        String error = roleService.updateRole(roleId, request);
         if (error != null) {
             return ResponseEntity.badRequest().body(Map.of("message", error));
         }
@@ -85,7 +85,7 @@ public class RoleController {
      */
     @PostMapping("/DeleteRole/{roleId}")
     public ResponseEntity<?> deleteRole(@PathVariable Integer roleId) {
-        boolean deleted = IRoleService.deleteRole(roleId);
+        boolean deleted = roleService.deleteRole(roleId);
         if (!deleted) {
             return ResponseEntity.badRequest().body(Map.of("message", "Rôle non trouvé"));
         }

@@ -32,7 +32,7 @@ public class UserController {
      */
 
     @PostMapping("/ListUsers")
-    @RequirePermission("USER_READ")
+    
     public ResponseEntity<?> listUsers(
             @RequestBody(required = false) UserBody body,
             @RequestParam(defaultValue = "0") int page,
@@ -45,7 +45,6 @@ public class UserController {
      * GET /api/securite/GetUser/{userId}
      */
     @GetMapping("/GetUser/{userId}")
-    @RequirePermission("USER_READ")
     public ResponseEntity<?> getUser(@PathVariable Integer userId) {
         User user = iUserService.getUserById(userId);
         if (user == null) {
@@ -59,7 +58,6 @@ public class UserController {
      * Body: { "login", "email", "libelle", "idRole" }
      */
     @PostMapping("/AddUser")
-    @RequirePermission("USER_CREATE")
     public ResponseEntity<?> saveUser(@RequestBody UserBody request) {
         String error = iUserService.createUser(request);
         if (error != null) {
@@ -73,7 +71,7 @@ public class UserController {
      * Body: { "email", "libelle" }
      */
     @PostMapping("/UpdateUser/{userId}")
-    @RequirePermission("USER_UPDATE")
+    
     public ResponseEntity<?> updateUser(
             @PathVariable Integer userId,
             @RequestBody Map<String, String> request) {
@@ -88,7 +86,6 @@ public class UserController {
      * POST /api/securite/DeleteUser/{userId}
      */
     @PostMapping("/DeleteUser/{userId}")
-    @RequirePermission("USER_DELETE")
     public ResponseEntity<?> deleteUser(@PathVariable Integer userId) {
         boolean deleted = iUserService.deleteUser(userId);
         if (!deleted) {

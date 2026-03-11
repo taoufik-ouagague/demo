@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -32,6 +34,14 @@ public class User extends EntityClass {
     @NotBlank
     @Column(nullable = false)
     private String pwd;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_droit",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "droit_id")
+    )
+    private Set<Droit> droits = new HashSet<>();
 
     public Integer getId() {
         return id;
@@ -74,6 +84,18 @@ public class User extends EntityClass {
     }
 
     @JsonIgnore
+    public Set<Droit> getDroits() {
+        return droits;
+    }
+
+    public void setDroits(Set<Droit> droits) {
+        this.droits = droits;
+    }
+
+    public String getUsername() {
+        return login;
+    }
+
     public String getPwd() {
         return pwd;
     }

@@ -31,4 +31,31 @@ public interface UserDroitRepository extends JpaRepository<UserDroit, Integer> {
            "JOIN droit d ON ud.droit_id = d.id " +
            "WHERE ud.user_id = :userId AND d.code = :droitCode", nativeQuery = true)
     boolean existsByUserAndDroitCode(@Param("userId") Integer userId, @Param("droitCode") String droitCode);
+    
+    /**
+     * Check if a specific user has a specific droit assigned
+     * @param userId the user ID
+     * @param droitId the droit ID
+     * @return true if the droit is assigned to the user, false otherwise
+     */
+    @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN true ELSE false END " +
+           "FROM user_droit WHERE user_id = :userId AND droit_id = :droitId", nativeQuery = true)
+    boolean existsByUserIdAndDroitId(@Param("userId") Integer userId, @Param("droitId") Integer droitId);
+    
+    /**
+     * Find the user-droit assignment for a specific user and droit
+     * @param userId the user ID
+     * @param droitId the droit ID
+     * @return the UserDroit object if found, null otherwise
+     */
+    @Query(value = "SELECT ud FROM UserDroit ud WHERE ud.user.id = :userId AND ud.droit.id = :droitId")
+    UserDroit findByUserIdAndDroitId(@Param("userId") Integer userId, @Param("droitId") Integer droitId);
+    
+    /**
+     * Find all droits assigned to a specific user
+     * @param userId the user ID
+     * @return list of droits assigned to the user
+     */
+    @Query(value = "SELECT d FROM Droit d JOIN UserDroit ud ON d.id = ud.droit.id WHERE ud.user.id = :userId")
+    List<Droit> findDroitsByUserId(@Param("userId") Integer userId);
 }

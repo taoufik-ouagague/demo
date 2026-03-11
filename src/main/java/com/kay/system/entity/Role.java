@@ -2,6 +2,8 @@ package com.kay.system.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "roles")
@@ -15,6 +17,14 @@ public class Role extends EntityClass {
     private String libelle; // Admin, Normal User, Client
 
     private String description;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "role_droit",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "droit_id")
+    )
+    private Set<Droit> droits = new HashSet<>();
 
     // Getters and Setters
     public Integer getId() {
@@ -43,5 +53,11 @@ public class Role extends EntityClass {
         this.description = description;
     }
 
-   
+    public Set<Droit> getDroits() {
+        return droits;
+    }
+
+    public void setDroits(Set<Droit> droits) {
+        this.droits = droits;
+    }
 }

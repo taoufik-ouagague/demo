@@ -38,9 +38,20 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     public static UserDetailsImpl build(User user, UserDroitRepository userDroitRepository) {
-        // Load authorities from user's role
+        // Load authorities from user's role and droits
         List<GrantedAuthority> authorities = new ArrayList<>();
 
+        // Add user's role as authority (using libelle, not code)
+        if (user.getRole() != null && user.getRole().getLibelle() != null) {
+            authorities.add(new GrantedAuthority() {
+                @Override
+                public String getAuthority() {
+                    return user.getRole().getLibelle();
+                }
+            });
+        }
+
+        // Add individual droits as authorities
         List<UserDroit> droits = userDroitRepository.findByUserAndStatus(user, GlobalConstants.STATUT_ACTIF);
     
         for (UserDroit userDroit : droits) {

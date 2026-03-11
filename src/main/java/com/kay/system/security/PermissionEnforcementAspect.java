@@ -15,6 +15,7 @@ import com.kay.system.repository.UserDroitRepository;
 import com.kay.system.repository.UserRepository;
 
 import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
  * Aspect to enforce permission-based access control using @RequirePermission annotation
@@ -22,6 +23,7 @@ import java.util.Optional;
 @Aspect
 @Component
 public class PermissionEnforcementAspect {
+    private static final Logger logger = Logger.getLogger(PermissionEnforcementAspect.class.getName());
 
     @Autowired
     private UserRepository userRepository;
@@ -41,29 +43,59 @@ public class PermissionEnforcementAspect {
      */
     @Before("requirePermissionMethods(requirePermission)")
     public void checkPermission(JoinPoint joinPoint, RequirePermission requirePermission) {
-        String requiredPermissionCode = requirePermission.value();
+        String requiredPermission = requirePermission.value();
+        logger.info("=== PERMISSION CHECK ===");
+        logger.info("Required permission: " + requiredPermission);
+        logger.info("Method: " + joinPoint.getSignature().getName());
 
         // Get the current authenticated user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
+        if (authentication == null) {
+            logger.warning("Authentication is NULL!");
+            throw new AccessDeniedException("L'authentification n'a pas pu être effectuée");
+        }
+        
+        if (!authentication.isAuthenticated()) {
+            logger.warning("User not authenticated");
             throw new AccessDeniedException("L'utilisateur n'est pas authentifié");
         }
 
         String username = authentication.getName();
+        logger.info("Username: " + username);
+        logger.info("Authenticated: " + authentication.isAuthenticated());
+        logger.info("Authorities: " + authentication.getAuthorities());
         
         // Find the user in database
         Optional<User> userOpt = userRepository.findByLogin(username);
         if (userOpt.isEmpty()) {
+            logger.warning("User not found in database: " + username);
             throw new AccessDeniedException("Utilisateur non trouvé");
         }
 
         User user = userOpt.get();
 
-        // Check if user has the required permission/droit
-        boolean hasPermission = userDroitRepository.existsByUserAndDroitCode(user.getId(), requiredPermissionCode);
+        // Check if the required permission is a Role (e.g., "ROLE_SECURITE")
+        if (user.getRole() != null && user.getRole().getLibelle() != null) {
+            String userRoleLibelle = user.getRole().getLibelle();
+            logger.info("User role libelle: " + userRoleLibelle);
+            logger.info("Comparing: '" + userRoleLibelle + "' with '" + requiredPermission + "'");
+            
+            if (userRoleLibelle.trim().equalsIgnoreCase(requiredPermission.trim())) {
+                logger.info("✓ PERMISSION GRANTED (Role match)");
+                return;
+            }
+        } else {
+            logger.warning("User has no role assigned or role is null");
+        }
+
+        // If not a role match, check if it's a specific droit code
+        boolean hasPermission = userDroitRepository.existsByUserAndDroitCode(user.getId(), requiredPermission);
+        logger.info("Droit code check result: " + hasPermission);
 
         if (!hasPermission) {
-            throw new AccessDeniedException("L'utilisateur n'a pas la permission requise: " + requiredPermissionCode);
+            logger.warning("✗ PERMISSION DENIED: " + requiredPermission);
+            throw new AccessDeniedException("L'utilisateur n'a pas la permission requise: " + requiredPermission);
         }
+        logger.info("✓ PERMISSION GRANTED (Droit match)");
     }
 }
